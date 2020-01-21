@@ -15,3 +15,6 @@ initEnv() {
         export DISPLAY=:99    
     fi    
 }     
+
+
+pwd
