@@ -18,12 +18,12 @@ initEnv() {
 
 resolveDep() {
 	cp -r ~/iiblibs/ExceptionManager .
-	# This functions needs to be modified in order to support any case
+	# This function needs to be modified in order to support any case
 }
 
 build() {
-	pwd
-	ls
+	APP=`echo ./*/application.descriptor | awk -F '/' '{print $2}'`
+	mqsicreatebar -data `pwd` -b my.bar -a "$APP" -l ExceptionManager -deployAsSource
 }
 
 
