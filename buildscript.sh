@@ -17,8 +17,7 @@ initEnv() {
 }     
 
 resolveDep() {
-	echo ~
-	ls
+	cp -r ~/iiblibs/ExceptionManager .
 	# This functions needs to be modified in order to support any case
 }
 
