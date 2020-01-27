@@ -17,7 +17,7 @@ initEnv() {
 }     
 
 resolveDep() {
-	cp -r /home/iresh/IIB_CMN_ExceptionManagerLib .
+	echo ~
 	ls
 	# This functions needs to be modified in order to support any case
 }
