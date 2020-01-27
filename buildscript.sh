@@ -17,14 +17,8 @@ initEnv() {
 }     
 
 resolveDep() {
-	CUR_DIR=`pwd`
-	cd
-	mkdir tmp
-	cd $_
-	git clone https://github.com/n-ablePrivateLimitedColomboSriLanka/IIB_CMN_ExceptionManagerLib.git
-	cd IIB_CMN_ExceptionManagerLib
-	cp ExceptionManager "$CUR_DIR"
-
+	cp -r /home/iresh/IIB_CMN_ExceptionManagerLib .
+	ls
 	# This functions needs to be modified in order to support any case
 }
 
