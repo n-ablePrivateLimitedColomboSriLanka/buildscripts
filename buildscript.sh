@@ -23,6 +23,7 @@ resolveDep() {
 
 build() {
 	pwd
+	ls
 }
 
 
