@@ -26,10 +26,10 @@ build() {
 	APP=`echo ./*/application.descriptor | awk -F '/' '{print $2}'`
 
 	# Build the bar file
-	mqsicreatebar -data `pwd` -b my.bar -a "$APP" -l ExceptionManager -deployAsSource
+	mqsicreatebar -data `pwd` -b "$1" -a "$APP" -l ExceptionManager -deployAsSource
 }
 
 
 initEnv
 resolveDep
-build
+build "my.bar"
