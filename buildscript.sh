@@ -22,7 +22,10 @@ resolveDep() {
 }
 
 build() {
+	# Find the application name
 	APP=`echo ./*/application.descriptor | awk -F '/' '{print $2}'`
+
+	# Build the bar file
 	mqsicreatebar -data `pwd` -b my.bar -a "$APP" -l ExceptionManager -deployAsSource
 }
 
