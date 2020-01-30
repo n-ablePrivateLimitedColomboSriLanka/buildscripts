@@ -25,8 +25,10 @@ build() {
 	# Find the application name
 	APP=`echo ./*/application.descriptor | awk -F '/' '{print $2}'`
 
+	# Build dependency string
+	DEP=`xmllint --format */application.descriptor  | grep -oP '<libraryName>\K\w+' | awk 'BEGIN {lines="-l"} {lines = lines " " $1} END {print lines}'`
 	# Build the bar file
-	mqsicreatebar -data `pwd` -b "$1" -a "$APP" -l ExceptionManager -deployAsSource
+	mqsicreatebar -data `pwd` -b "$1" -a "$APP" $DEP -deployAsSource
 }
 
 
