@@ -17,7 +17,7 @@ initEnv() {
 }     
 
 resolveDep() {
-	cp -r ~/iiblibs/* .
+	cp -rn /home/jenkins/iib/libs/* .
 	# This function needs to be modified in order to support any case
 }
 
