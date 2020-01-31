@@ -26,12 +26,24 @@ build() {
 	APP=`echo ./*/application.descriptor | awk -F '/' '{print $2}'`
 
 	# Build dependency string
-	DEP=`xmllint --format */application.descriptor  | grep -oP '<libraryName>\K\w+' | awk 'BEGIN {lines="-l"} {lines = lines " " $1} END {print lines}'`
+	DEP=`xmllint --format */application.descriptor \
+		| grep -oP '<libraryName>\K\w+' \
+		| awk 'BEGIN {lines="-l"} {lines = lines " " $1} END {print lines}'`
 	# Build the bar file
-	mqsicreatebar -data `pwd` -b "$1" -a "$APP" $DEP -deployAsSource
+	VER="${APP}_`git tag -l | tail -1`.bar"
+	mqsicreatebar -data `pwd` -b "$VER" -a "$APP" $DEP -deployAsSource
+}
+
+checkoutLatestLibs() {
+	CUR_DIR=`pwd`
+	cd /home/jenkins/iib/repositories
+	for dir in *;do 
+		git reset --hard HEAD && git pull
+	done;
+	cd $CUR_DIR
 }
 
 
 initEnv
 resolveDep
-build "my.bar"
+build
