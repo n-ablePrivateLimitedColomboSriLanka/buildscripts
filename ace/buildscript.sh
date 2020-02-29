@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 initEnv() {    
     # Setup environment for ACE toolkit    
