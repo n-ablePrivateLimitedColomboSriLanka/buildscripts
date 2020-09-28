@@ -22,6 +22,9 @@ resolveDep() {
 }
 
 build() {
+	# Clean existing bar files
+	rm -rf *.bar
+
 	# Find the application name
 	APP=`echo ./*/application.descriptor | awk -F '/' '{print $2}'`
 
