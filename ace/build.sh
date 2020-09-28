@@ -32,7 +32,7 @@ build() {
 	# Build dependency string
 	DEP=`xmllint --format */application.descriptor \
 		| grep -oP '<libraryName>\K\w+' \
-		| awk 'BEGIN {lines="-l"} {lines = lines " " $1} END {print lines}'`
+		| awk 'BEGIN {lines="-l"} {lines = lines " " $1} END {if(lines!="-l") print lines}'`
 	# Build the bar file
 	VER="${APP}_`git tag -l | tail -1`.bar"
 	mqsicreatebar -data `pwd` -b "$VER" -a "$APP" $DEP -deployAsSource
