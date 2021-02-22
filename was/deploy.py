@@ -1,7 +1,5 @@
 import os
 
-path = "/usr/tmp"
-
 # Check current working directory.
 retval = os.getcwd()
 print "Current working directory %s" % retval
