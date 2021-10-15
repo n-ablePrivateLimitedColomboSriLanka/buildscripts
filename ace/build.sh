@@ -18,8 +18,8 @@ initEnv() {
 
 createSymbolicLinks() {
 	# This function will be generalized in the future
-	ln -s IIB_CMN_ExceptionManagerLib/ExceptionManager ExceptionManager
-	ln -s IIB_CMN_LoggerLib Logger
+	ln -sf IIB_CMN_ExceptionManagerLib/ExceptionManager ExceptionManager
+	ln -sf IIB_CMN_LoggerLib Logger
 }
 
 build() {
