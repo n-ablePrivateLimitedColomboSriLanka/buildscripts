@@ -1,5 +1,7 @@
 #!/bin/bash -x
 
+shopt -s extglob
+
 initEnv() {
     # Setup environment for ACE toolkit    
     . /opt/IBM/ace-11.0.0.7/server/bin/mqsiprofile
@@ -27,10 +29,10 @@ build() {
 	rm -rf *.bar
 
 	# Find the application name
-	APP=`echo ./*/application.descriptor | awk -F '/' '{print $2}'`
+	APP=`echo ./*/@(restapi|application).descriptor | awk -F '/' '{print $2}'`
 
 	# Build dependency string
-	DEP=`xmllint --format */application.descriptor \
+	DEP=`xmllint --format */@(restapi|application).descriptor \
 		| grep -oP '<libraryName>\K\w+' \
 		| awk 'BEGIN {lines="-l"} {lines = lines " " $1} END {if(lines!="-l") print lines}'`
 	# Build the bar file
