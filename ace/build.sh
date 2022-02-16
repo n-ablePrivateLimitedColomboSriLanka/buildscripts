@@ -2,6 +2,8 @@
 
 shopt -s extglob
 
+SHARED_LIBS_URL="https://raw.githubusercontent.com/IreshMMOut/ACESharedLibDirectory/master/libraries.csv"
+
 initEnv() {
     # Setup environment for ACE toolkit    
     . /opt/IBM/ace-11.0.0.7/server/bin/mqsiprofile
@@ -18,10 +20,11 @@ initEnv() {
     fi
 }
 
-createSymbolicLinks() {
-	# This function will be generalized in the future
-	ln -sf IIB_CMN_ExceptionManagerLib/ExceptionManager ExceptionManager
-	ln -sf IIB_CMN_LoggerLib Logger
+resolveDependencies() {
+	DEP=`xmllint --format */@(restapi|application).descriptor \
+		| grep -oP '<libraryName>\K\w+' \
+		| awk 'BEGIN {lines=""} {lines = lines " " $1} END {print lines}'`
+	python3 `dirname $0`/resolve_dependencies.py $SHARED_LIBS_URL $DEP
 }
 
 build() {
@@ -36,10 +39,10 @@ build() {
 		| grep -oP '<libraryName>\K\w+' \
 		| awk 'BEGIN {lines="-l"} {lines = lines " " $1} END {if(lines!="-l") print lines}'`
 	# Build the bar file
-	VER="${APP}_`git tag -l | tail -1`.bar"
-	mqsicreatebar -data `pwd` -b "$VER" -a "$APP" $DEP -deployAsSource
+	mqsicreatebar -data `pwd` -b ${APP}.bar -a "$APP" $DEP -deployAsSource
 }
 
+
 initEnv
-createSymbolicLinks
+resolveDependencies
 build
