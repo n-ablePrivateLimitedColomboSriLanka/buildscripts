@@ -1,0 +1,27 @@
+pipeline {
+   agent { label 'ACE12' }
+   options {
+      skipDefaultCheckout(true)
+   }
+   stages {
+      stage('Build') {
+          steps {
+              cleanWs()
+              checkout scm
+              sh '/home/iresh/iresh-s-buildscripts/ace/build.sh "https://raw.githubusercontent.com/IreshMMOut/ACESharedLibDirectory/master/libraries.csv"'
+          }
+      }
+
+      stage('Upload artifact') {
+          steps {
+              sh '''mvn deploy:deploy-file -Durl=https://maven.pkg.github.com/n-ableprivatelimitedcolombosrilanka/IIB_REPO -DrepositoryId=github -Dfile=`echo *.bar` -DpomFile=pom.xml -Dpackaging=bar'''
+          }
+      }
+
+      stage('Deploy') {
+          steps {
+              sh '/home/iresh/iresh-s-buildscripts/ace/deploy.sh "-i ace12host -p 4414" server1'
+          }
+      }
+   }
+}

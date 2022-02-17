@@ -7,8 +7,8 @@ pipeline {
       stage('Build') {
           steps {
               cleanWs()
-              checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'Application']], userRemoteConfigs: [[url: "${params.GIT_REPOSITORY}"]]])
-              sh '/home/iresh/iresh-s-buildscripts/ace/build.sh'
+              checkout scm
+              sh '/full/path/to/build.sh "<shared_lib_directory>"'
           }
       }
 
@@ -20,7 +20,7 @@ pipeline {
 
       stage('Deploy') {
           steps {
-              sh '/home/iresh/iresh-s-buildscripts/ace/deploy.sh TEST server1'
+              sh '/full/path/to/deploy.sh <NodeSpec> <server>'
           }
       }
    }
