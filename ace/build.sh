@@ -2,7 +2,7 @@
 
 shopt -s globstar
 
-SHARED_LIBS_URL="https://raw.githubusercontent.com/IreshMMOut/ACESharedLibDirectory/master/libraries.csv"
+SHARED_LIBS_URL="$1"
 
 resolveDependencies() {
 	DEP="$1"

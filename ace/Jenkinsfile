@@ -8,7 +8,7 @@ pipeline {
           steps {
               cleanWs()
               checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'Application']], userRemoteConfigs: [[url: "${params.GIT_REPOSITORY}"]]])
-              sh '/home/iresh/iresh-s-buildscripts/ace/build.sh'
+              sh '/home/iresh/iresh-s-buildscripts/ace/build.sh "https://raw.githubusercontent.com/IreshMMOut/ACESharedLibDirectory/master/libraries.csv"'
           }
       }
 
