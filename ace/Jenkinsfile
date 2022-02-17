@@ -1,5 +1,5 @@
 pipeline {
-   agent any
+   agent { label 'ACE12' }
    options {
       skipDefaultCheckout(true)
    }
@@ -7,22 +7,20 @@ pipeline {
       stage('Build') {
           steps {
               cleanWs()
-              checkout scm
-              sh '/full/path/to/build.sh'
+              checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'Application']], userRemoteConfigs: [[url: "${params.GIT_REPOSITORY}"]]])
+              sh '/home/iresh/iresh-s-buildscripts/ace/build.sh'
           }
       }
 
       stage('Upload artifact') {
           steps {
-              withMaven(maven: 'MAVEN_INSTALLATION') {
-                  sh '''mvn deploy:deploy-file -Durl=<maven_repo_url> -DrepositoryId=<repo_id> -Dfile=`echo *.bar` -DpomFile=pom.xml -Dpackaging=bar'''
-             }
+              sh '''mvn deploy:deploy-file -Durl=<maven_repo_url> -DrepositoryId=<repo_id> -Dfile=`echo *.bar` -DpomFile=pom.xml -Dpackaging=bar'''
           }
       }
 
       stage('Deploy') {
           steps {
-              
+              sh '/home/iresh/iresh-s-buildscripts/ace/deploy.sh TEST server1'
           }
       }
    }
