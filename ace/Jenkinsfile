@@ -1,0 +1,29 @@
+pipeline {
+   agent any
+   options {
+      skipDefaultCheckout(true)
+   }
+   stages {
+      stage('Build') {
+          steps {
+              cleanWs()
+              checkout scm
+              sh '/full/path/to/build.sh'
+          }
+      }
+
+      stage('Upload artifact') {
+          steps {
+              withMaven(maven: 'MAVEN_INSTALLATION') {
+                  sh '''mvn deploy:deploy-file -Durl=<maven_repo_url> -DrepositoryId=<repo_id> -Dfile=`echo *.bar` -DpomFile=pom.xml -Dpackaging=bar'''
+             }
+          }
+      }
+
+      stage('Deploy') {
+          steps {
+              
+          }
+      }
+   }
+}

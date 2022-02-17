@@ -1,12 +1,12 @@
 #!/bin/bash -x
 
-shopt -s extglob
+shopt -s globstar
 
 SHARED_LIBS_URL="https://raw.githubusercontent.com/IreshMMOut/ACESharedLibDirectory/master/libraries.csv"
 
 initEnv() {
     # Setup environment for ACE toolkit    
-    . /opt/IBM/ace-11.0.0.7/server/bin/mqsiprofile
+    . /opt/ace-12.0.3.0/server/bin/mqsiprofile
 
     #Make sure the X server or Xvfb is running    
     if ! ( pgrep -x Xorg > /dev/null || pgrep -x Xvfb > /dev/null ); then
@@ -21,28 +21,28 @@ initEnv() {
 }
 
 resolveDependencies() {
-	DEP=`xmllint --format */@(restapi|application).descriptor \
-		| grep -oP '<libraryName>\K\w+' \
-		| awk 'BEGIN {lines=""} {lines = lines " " $1} END {print lines}'`
+	DEP="$1"
 	python3 `dirname $0`/resolve_dependencies.py $SHARED_LIBS_URL $DEP
 }
 
 build() {
-	#Clean existing bar files
-	rm -rf *.bar
-
-	# Find the application name
-	APP=`echo ./*/@(restapi|application).descriptor | awk -F '/' '{print $2}'`
-
-	# Build dependency string
-	DEP=`xmllint --format */@(restapi|application).descriptor \
-		| grep -oP '<libraryName>\K\w+' \
-		| awk 'BEGIN {lines="-l"} {lines = lines " " $1} END {if(lines!="-l") print lines}'`
+	APP="$1"
+	DEP="-l $2"
+	if [ -z "${2// }"]; then
+		DEP=""
+	fi
 	# Build the bar file
-	mqsicreatebar -data `pwd` -b ${APP}.bar -a "$APP" $DEP -deployAsSource
+	mqsicreatebar -data `pwd` -b "${APP}.bar" -a "$APP" $DEP -deployAsSource
 }
 
+APP=`xmllint --format ./**/.project | grep -oP '<name>\K\w+(?=</name>)'`
+APP_PATH=`dirname ./**/.project`
+DEPENDENCIES=`xmllint --format */*.descriptor \
+		| grep -oP '<libraryName>\K\w+' \
+		| awk 'BEGIN {lines=""} {lines = lines " " $1} END {print lines}'`
+
+ln -sf "$APP_PATH" "$APP"
 
 initEnv
-resolveDependencies
-build
+resolveDependencies "$DEPENDENCIES"
+build "$APP" "$DEPENDENCIES"
