@@ -4,22 +4,6 @@ shopt -s globstar
 
 SHARED_LIBS_URL="https://raw.githubusercontent.com/IreshMMOut/ACESharedLibDirectory/master/libraries.csv"
 
-initEnv() {
-    # Setup environment for ACE toolkit    
-    . /opt/ace-12.0.3.0/server/bin/mqsiprofile
-
-    #Make sure the X server or Xvfb is running    
-    if ! ( pgrep -x Xorg > /dev/null || pgrep -x Xvfb > /dev/null ); then
-       # Start Xvfb    
-        Xvfb :99 &
-    fi
-
-    if ! [ -n "$DISPLAY" ]; then
-        # Export display environment variable    
-        export DISPLAY=:99
-    fi
-}
-
 resolveDependencies() {
 	DEP="$1"
 	python3 `dirname $0`/resolve_dependencies.py $SHARED_LIBS_URL $DEP
@@ -43,6 +27,6 @@ DEPENDENCIES=`xmllint --format */*.descriptor \
 
 ln -sf "$APP_PATH" "$APP"
 
-initEnv
+source `dirname $0`/initenv.sh
 resolveDependencies "$DEPENDENCIES"
 build "$APP" "$DEPENDENCIES"
