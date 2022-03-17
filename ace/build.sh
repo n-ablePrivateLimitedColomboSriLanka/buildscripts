@@ -21,8 +21,8 @@ build() {
 
 APP=`xmllint --format ./**/.project | grep -oP '<name>\K\w+(?=</name>)'`
 APP_PATH=`dirname ./**/.project`
-DEPENDENCIES=`xmllint --format */*.descriptor \
-		| grep -oP '<libraryName>\K\w+' \
+DEPENDENCIES=`xmllint --format ./**/.project \
+		| grep -oP '<project>\K\w+' \
 		| awk 'BEGIN {lines=""} {lines = lines " " $1} END {print lines}'`
 
 ln -sf "$APP_PATH" "$APP"
