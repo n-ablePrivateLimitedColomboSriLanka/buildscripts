@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/bin/bash -x
 
 NODE_SPEC="$1"
 SERVER="$2"
 source `dirname $0`/initenv.sh
-mqsideploy $NODE_SPEC -e $SERVER -a `echo *.bar`
+APP="$(cat appname)"
+mqsideploy $NODE_SPEC -e $SERVER -a "${APP}.bar"

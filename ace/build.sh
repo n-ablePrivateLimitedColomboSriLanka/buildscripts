@@ -12,17 +12,17 @@ resolveDependencies() {
 build() {
 	APP="$1"
 	DEP="-l $2"
-	if [ -z "${2// }"]; then
+	if [ -z "${2// }" ]; then
 		DEP=""
 	fi
 	# Build the bar file
 	mqsicreatebar -data `pwd` -b "${APP}.bar" -a "$APP" $DEP -deployAsSource
 }
 
-APP=`xmllint --format ./**/.project | grep -oP '<name>\K\w+(?=</name>)'`
+APP=`xmllint --format ./**/.project | grep -m 1 -oP '<name>\K\N+(?=</name>)'`
 APP_PATH=`dirname ./**/.project`
 DEPENDENCIES=`xmllint --format ./**/.project \
-		| grep -oP '<project>\K\w+' \
+		| grep -oP '<project>\K\N+(?=</project>)' \
 		| awk 'BEGIN {lines=""} {lines = lines " " $1} END {print lines}'`
 
 ln -sf "$APP_PATH" "$APP"
@@ -30,3 +30,4 @@ ln -sf "$APP_PATH" "$APP"
 source `dirname $0`/initenv.sh
 resolveDependencies "$DEPENDENCIES"
 build "$APP" "$DEPENDENCIES"
+echo "$APP" > appname
