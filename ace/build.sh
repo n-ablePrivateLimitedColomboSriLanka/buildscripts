@@ -10,13 +10,9 @@ resolveDependencies() {
 }
 
 build() {
-	APP="$1"
-	DEP="-l $2"
-	if [ -z "${2// }" ]; then
-		DEP=""
-	fi
+	APP_NAME="$1"
 	# Build the bar file
-	mqsicreatebar -data `pwd` -b "${APP}.bar" -a "$APP" $DEP -deployAsSource
+	mqsicreatebar -data `pwd` -b "${APP_NAME}.bar" -a "$APP_NAME" -deployAsSource
 }
 
 APP=`xmllint --format ./**/.project | grep -m 1 -oP '<name>\K\N+(?=</name>)'`
