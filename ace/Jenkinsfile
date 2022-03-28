@@ -1,5 +1,8 @@
 pipeline {
    agent { label 'ACE12' }
+   environment {
+      APPLICATION_DEFAULT_DIR='APPLICATION_5JITHW8YDN7KSW'
+   }
    options {
       skipDefaultCheckout(true)
    }
@@ -7,7 +10,7 @@ pipeline {
       stage('Build') {
           steps {
               cleanWs()
-              checkout scm
+              checkout scm: [$class: 'GitSCM', branches: scm.branches, extensions: scm.extensions + [[$class: 'RelativeTargetDirectory', relativeTargetDir: env.APPLICATION_DEFAULT_DIR]], userRemoteConfigs: scm.userRemoteConfigs]
               sh '/full/path/to/build.sh "<shared_lib_directory>"'
           }
       }
