@@ -18,9 +18,10 @@ for shared_lib in shared_libs_list:
     shared_libs_directory[shared_lib[0]] = shared_lib[1:]
 
 for dependency in DEPENDENCIES:
-    clone_url = shared_libs_directory[dependency][0]
-    path = shared_libs_directory[dependency][1]
-    repository_name = clone_url.split("/")[-1].strip(".git")
+    if dependency in shared_libs_directory:
+        clone_url = shared_libs_directory[dependency][0]
+        path = shared_libs_directory[dependency][1]
+        repository_name = clone_url.split("/")[-1].strip(".git")
 
-    os.system(f"git clone {clone_url}")
-    os.system(f"ln -sf {repository_name}{path} {dependency}")
+        os.system(f"git clone {clone_url}")
+        os.system(f"ln -sf {repository_name}{path} {dependency}")
