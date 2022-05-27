@@ -1,45 +1,35 @@
 #!/bin/bash -x
 
-shopt -s extglob
+shopt -s globstar
 
-initEnv() {
-    # Setup environment for ACE toolkit    
-    . /opt/IBM/ace-11.0.0.7/server/bin/mqsiprofile
+SHARED_LIBS_URL="$1"
 
-    #Make sure the X server or Xvfb is running    
-    if ! ( pgrep -x Xorg > /dev/null || pgrep -x Xvfb > /dev/null ); then
-       # Start Xvfb    
-        Xvfb :99 &
-    fi
+# This should be unique and applications/libraries shouldn't use this 
+# as repository directory or application name. A random string
+# is appended
+APPLICATION_DEFAULT_DIR="${APPLICATION_DEFAULT_DIR:-APPLICATION_5JITHW8YDN7KSW}"
 
-    if ! [ -n "$DISPLAY" ]; then
-        # Export display environment variable    
-        export DISPLAY=:99
-    fi
-}
-
-createSymbolicLinks() {
-	# This function will be generalized in the future
-	ln -sf IIB_CMN_ExceptionManagerLib/ExceptionManager ExceptionManager
-	ln -sf IIB_CMN_LoggerLib Logger
+resolveDependencies() {
+	DEPENDENCIES="$1"
+	python3 `dirname $0`/resolve_dependencies.py $SHARED_LIBS_URL $DEPENDENCIES
 }
 
 build() {
-	#Clean existing bar files
-	rm -rf *.bar
-
-	# Find the application name
-	APP=`echo ./*/@(restapi|application).descriptor | awk -F '/' '{print $2}'`
-
-	# Build dependency string
-	DEP=`xmllint --format */@(restapi|application).descriptor \
-		| grep -oP '<libraryName>\K\w+' \
-		| awk 'BEGIN {lines="-l"} {lines = lines " " $1} END {if(lines!="-l") print lines}'`
+	APP_NAME="$1"
 	# Build the bar file
-	VER="${APP}_`git tag -l | tail -1`.bar"
-	mqsicreatebar -data `pwd` -b "$VER" -a "$APP" $DEP -deployAsSource
+	mqsicreatebar -data `pwd` -b "${APP_NAME}.bar" -a "$APP_NAME" -deployAsSource
 }
 
-initEnv
-createSymbolicLinks
-build
+APP_DOT_PROJECT=$APPLICATION_DEFAULT_DIR/**/.project
+APP_NAME=`xmllint --format $APP_DOT_PROJECT | grep -m 1 -oP '<name>\K\N+(?=</name>)'`
+APP_PATH=`dirname $APP_DOT_PROJECT`
+DEPENDENCIES=`xmllint --format $APP_DOT_PROJECT \
+		| grep -oP '<project>\K\N+(?=</project>)' \
+		| awk 'BEGIN {lines=""} {lines = lines " " $1} END {print lines}'`
+
+ln -sf "$APP_PATH" "$APP_NAME"
+
+source `dirname $0`/initenv.sh
+resolveDependencies "$DEPENDENCIES"
+build "$APP_NAME" "$DEPENDENCIES"
+echo "$APP_NAME" > appname
