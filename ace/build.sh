@@ -24,8 +24,12 @@ build() {
 applyConfig() {
 	APP_NAME="$1"
 	CONFIG_FILE="$2"
-	# Apply the overrides to the bar file
-	mqsiapplybaroverride -b "${APP_NAME}.bar" -p "$CONFIG_FILE" -k "$APP_NAME"
+	if [[ -f "$CONFIG_FILE" ]]; then
+		# Apply the overrides to the bar file
+		mqsiapplybaroverride -b "${APP_NAME}.bar" -p "$CONFIG_FILE" -k "$APP_NAME"
+	else
+		echo Overrides file $CONFIG_FILE doesn\'t exist. Skipping overriding properties!
+	fi
 }
 
 APP_DOT_PROJECT=$APPLICATION_DEFAULT_DIR/**/.project
