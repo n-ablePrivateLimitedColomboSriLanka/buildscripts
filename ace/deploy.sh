@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 NODE_SPEC="$1"
 SERVER="$2"
