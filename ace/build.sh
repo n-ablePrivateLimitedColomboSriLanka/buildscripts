@@ -11,8 +11,8 @@ BRANCH_NAME="$2"
 APPLICATION_DEFAULT_DIR="${APPLICATION_DEFAULT_DIR:-APPLICATION_5JITHW8YDN7KSW}"
 
 resolveDependencies() {
-	DEPENDENCIES="$1"
-	python3 `dirname $0`/resolve_dependencies.py $SHARED_LIBS_URL $DEPENDENCIES
+	DOT_PROJECT_FILE="$1"
+	python3 `dirname $0`/resolve_dependencies.py $SHARED_LIBS_URL $DOT_PROJECT_FILE $BRANCH_NAME 
 }
 
 build() {
@@ -35,14 +35,11 @@ applyConfig() {
 APP_DOT_PROJECT=$APPLICATION_DEFAULT_DIR/**/.project
 APP_NAME=`xmllint --format $APP_DOT_PROJECT | grep -m 1 -oP '<name>\K\N+(?=</name>)'`
 APP_PATH=`dirname $APP_DOT_PROJECT`
-DEPENDENCIES=`xmllint --format $APP_DOT_PROJECT \
-		| grep -oP '<project>\K\N+(?=</project>)' \
-		| awk 'BEGIN {lines=""} {lines = lines " " $1} END {print lines}'`
 
 ln -sf "$APP_PATH" "$APP_NAME"
 
 source `dirname $0`/initenv.sh
-resolveDependencies "$DEPENDENCIES"
+resolveDependencies "$(realpath $APP_DOT_PROJECT)"
 build "$APP_NAME" "$DEPENDENCIES"
 CONFIG_FILE="${APP_NAME}/${APP_NAME}.conf.${BRANCH_NAME}"
 applyConfig "$APP_NAME" "$CONFIG_FILE"
